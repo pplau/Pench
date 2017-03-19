@@ -6,6 +6,7 @@ sys.path.append('/root/pench')
 import paramiko
 import threading
 import time
+import os
 
 
 def init(conf):
@@ -66,14 +67,11 @@ def ssh_connect(ip, username="root", passwd="admin123", tag="pw", key_path="/roo
 
 
 
-def ssh_exec_cmd(conn, cmd, last, interval):
+def ssh_exec_cmd(conn, cmd):
 	# last is iostat or vmstat excute time, interval is thier monitor interval
 	# 1.excute cmd  2.log runtime data  3.return log's path #
-	count = last
-	while (count>0):
-		conn.exec_command(cmd)
-		time.sleep(interval)
-		count = count-1
+	conn.exec_command(cmd)
+
 
 
 def ssh_close(_ssh_fd):
@@ -88,8 +86,8 @@ def run_pench(conf):
 		
 	# start iostat in each server node #
 	for conn in connect_list:
-		cmd = "iostat 1 1 >> /root/iotest.out"
-		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(conn, cmd, conf['last'], conf['interval']))
+		cmd = "iostat -k -x -t "+conf['last']+" "+conf['interval']+" >> /root/iotest.out"
+		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(conn, cmd)
 		mon_thread.start()    
 	# start cosbench in controller #
 	cosbanch_thread = threading.Thread(target=run_cosbench,args=())
