@@ -10,11 +10,12 @@ import time
 
 def init(conf):
 	try:
-		os.popen('cd '+conf['cosbench_path'])
-		os.popen('sh start-all.sh')
-		return "inital cosbench success"
+		os.popen('cd '+conf['cosbench_path']+' && sh ./start-all.sh')
+		print "inital cosbench success"
+		return 0
 	except:
-		return "inital cosbench error"
+		print "inital cosbench error"
+		return -1
 
 
 def get_conf(path=None):
@@ -22,7 +23,7 @@ def get_conf(path=None):
 		print "Configuration: "
 		conf = {}
 		conf['node_list'] = ['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34']
-		conf['last'] = 10
+		conf['last'] = 150
 		conf['interval'] = 1
 		conf['cosbench_path'] = "/root/0.4.2.c4"
 		conf['workload_path'] = "/root/0.4.2.c4/conf/s3-config-sample.xml"
@@ -39,7 +40,7 @@ def log(content):
 
 def run_cosbench(workload_path="./conf/s3-config-sample.xml"):
 	#os.popen('cd '+cosbench_path)
-	os.popen('sh cli.sh submit '+workload_path)
+	res = os.popen('cd '+conf['cosbench_path']+' && sh cli.sh submit '+workload_path)
 
 
 def ssh_connect(ip, username="root", passwd="admin123", tag="pw", key_path="/root"):
@@ -65,7 +66,7 @@ def ssh_connect(ip, username="root", passwd="admin123", tag="pw", key_path="/roo
 
 
 
-def ssh_exec_cmd(node, cmd, last, interval):
+def ssh_exec_cmd(conn, cmd, last, interval):
 	# last is iostat or vmstat excute time, interval is thier monitor interval
 	# 1.excute cmd  2.log runtime data  3.return log's path #
 	count = last
@@ -88,7 +89,7 @@ def run_pench(conf):
 	# start iostat in each server node #
 	for conn in connect_list:
 		cmd = "iostat 1 1 >> /root/iotest.out"
-		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(node, cmd, conf['last'], conf['interval']))
+		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(conn, cmd, conf['last'], conf['interval']))
 		mon_thread.start()    
 	# start cosbench in controller #
 	cosbanch_thread = threading.Thread(target=run_cosbench,args=())
