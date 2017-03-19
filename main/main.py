@@ -21,12 +21,12 @@ def get_conf(path=None):
 	if path is None:
 		print "Configuration: "
 		conf = {}
-		conf['node_list'] = input("")
-		conf['last'] = input("")
-		conf['interval'] = input("")
-		conf['cosbench_path'] = input("")
-		conf['workload_path'] = input("")
-		#conf = {'node_list':['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34'], 'last':10, 'interval':1}
+		conf['node_list'] = ['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34']
+		conf['last'] = 10
+		conf['interval'] = 1
+		conf['cosbench_path'] = "/root/0.4.2.c4"
+		conf['workload_path'] = "/root/0.4.2.c4/conf/s3-config-sample.xml"
+		#conf = {'node_list':['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34'], 'last':10, 'interval':1,}
 		return conf
 	else :
 		# load the config file
@@ -37,8 +37,8 @@ def log(content):
 	pass
 
 
-def run_cosbench(cosbench_path="./cosbench", workload_path="./conf/s3-config-sample.xml"):
-	os.popen('cd '+cosbench_path)
+def run_cosbench(workload_path="./conf/s3-config-sample.xml"):
+	#os.popen('cd '+cosbench_path)
 	os.popen('sh cli.sh submit '+workload_path)
 
 
