@@ -26,7 +26,7 @@ def ssh_exec_cmd(cmd, conn=None, last=None, interval=None):
 def run_pench(node_list, last=None, interval=None):
     # start iostat in each server node #
 	for node in node_list:
-		cmd = "iostat 1 1 >> /Users/PP/Downloads/"+node+".out"
+		cmd = "iostat 1 1 >> /Users/PP/Downloads/"+node+".csv"
 		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(cmd, None, last, interval))
 		mon_thread.start()
 		#mon_thread.join()
