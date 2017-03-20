@@ -6,6 +6,7 @@ sys.path.append('/root/pench')
 import paramiko
 import threading
 import os
+import re
 
 
 class Analysis :
@@ -45,27 +46,39 @@ class Analysis :
 
 
 	def iostat_analysis(self):
-		iostat_res = {}
+		iostat_res['read_num_count'] = 0
+		iostat_res['write_num_count'] = 0
+		iostat_res['read_kb_count'] = 0
+		iostat_res['write_kb_count'] = 0
+		r_wait = []
+		w_wait = []
+
 		for f in self.io_openfile_list:
-			iostat_res['read_num_count'] = 0
-			iostat_res['write_num_count'] = 0
-			iostat_res['read_kb_count'] = 0
-			iostat_res['write_kb_count'] = 0
-			r_wait = []
-			w_wait = []
+			r_num = 0
+			w_num = 0
+			r_kb = 0
+			w_kb = 0
 			for line in f.readlines():
 				value_list = re.split(r'\s+', line)
-				if value_list[0] is self.osd_device:
-					iostat_res['read_num_count'] = iostat_res['read_num_count']+float(value_list[3])
-					iostat_res['write_num_count'] = iostat_res['write_num_count']+float(value_list[4])
-					iostat_res['read_kb_count'] = iostat_res['read_kb_count']+float(value_list[5])
-					iostat_res['write_kb_count'] = iostat_res['write_kb_count']+float(value_list[6])
-					r_wait.append(float(value_list[10]))
-					w_wait.append(float(value_list[11]))
-			iostat_res['read_wait'] = round(sum(r_wait)/len(r_wait), 2)
-			iostat_res['wirte_wait'] = round(sum(w_wait)/len(w_wait), 2)
-			self.__clean__()
-			return iostat_res
+				if value_list[0] == self.osd_device:
+					r_num = round(r_num+float(value_list[3]), 2)
+					w_num = round(w_num+float(value_list[4]), 2)
+					r_kb = round(r_kb+float(value_list[5]) ,2)
+					w_kb = round(w_kb+float(value_list[6]), 2)
+					#r_wait.append(float(value_list[10]))
+					#w_wait.append(float(value_list[11]))
+					#iostat_res['read_wait'] = round(sum(r_wait)/len(r_wait), 2)
+					#iostat_res['wirte_wait'] = round(sum(w_wait)/len(w_wait), 2)	
+			iostat_res['read_num_count'] = iostat_res['read_num_count']+r_num
+			iostat_res['write_num_count'] = iostat_res['write_num_count']+w_num
+			iostat_res['read_kb_count'] = iostat_res['read_kb_count']+r_kb
+			iostat_res['write_kb_count'] = iostat_res['write_kb_count']+w_kb
+			
+		iostat_res['read_num_count'] = round(iostat_res['read_num_count']/len(self.node_list), 2)
+		iostat_res['write_num_count'] = round(iostat_res['write_num_count']/len(self.node_list), 2)
+		iostat_res['read_kb_count'] = round(iostat_res['read_kb_count']/len(self.node_list), 2)
+		iostat_res['write_kb_count'] = round(iostat_res['write_kb_count']/len(self.node_list), 2)
+		return iostat_res
 
 			
 
