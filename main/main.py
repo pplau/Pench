@@ -8,6 +8,8 @@ import threading
 import time
 import os
 
+import analysis.analysis as analysis
+
 
 def init(conf):
 	try:
@@ -28,6 +30,7 @@ def get_conf(path=None):
 		conf['interval'] = 1
 		conf['cosbench_path'] = "/root/0.4.2.c4"
 		conf['workload_path'] = "/root/0.4.2.c4/conf/s3-config-sample.xml"
+		conf['osd_device'] = "sda"
 		#conf = {'node_list':['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34'], 'last':10, 'interval':1,}
 		return conf
 	else :
@@ -100,11 +103,9 @@ if __name__=='__main__':
 
 	conf = get_conf()
 	init(conf)
-	last=10
-	interval=1
 	print "iostat running..."
 	run_pench(conf)
-	time.sleep(last+1)
+	time.sleep(conf['last']+1)
 
 	print "Please input 1 to jump to analyse."
 	print "Please input 2 to stop."
@@ -114,13 +115,13 @@ if __name__=='__main__':
 		tag = raw_input()
 		if tag is '1':
 			print "jump to analyse "
-			exit()
-
-		elif tag is '2':
+			anyls = analysis.Analysis(conf)
+			res = anyls.iostat_analysis()
+			print res
 			exit()
 
 		else :
-			pass
+			exit()
 
 
 
