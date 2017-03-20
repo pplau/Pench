@@ -22,17 +22,17 @@ class Analysis :
 	def __prepare_data__(self):	
 		#os.system('cd /root/pench/data')
 		for node in self.node_list:
-			path = '/root/data/'+node
+			path = '/root/data/'
 			os.system('mkdir '+path)
 
 			t = paramiko.Transport(sock=(node, 22))
 			t.connect(username="root", password="admin123")
 			sftp = paramiko.SFTPClient.from_transport(t)
-			sftp.get("/root/iostat.out", path)
+			sftp.get("/root/iostat.out", path+node+".out")
 			#sftp.get("/root/vmstat.out", path)
 			t.close()
 
-			iofile = open(path+'iostat.out')
+			iofile = open(path+node+".out")
 			self.io_openfile_list.append(iofile)
 			#vmfile = open(path+'vmstat.out')
 			#self.io_openfile_list.append(vmfile)
