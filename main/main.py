@@ -89,7 +89,7 @@ def run_pench(conf):
 		
 	# start iostat in each server node #
 	for conn in connect_list:
-		cmd = 'iostat -k -x -t '+str(conf['interval'])+' '+str(conf['last'])+' > /root/iotest.out'
+		cmd = 'iostat -k -x -t '+str(conf['interval'])+' '+str(conf['last'])+' > /root/iostat.out'
 		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(conn, cmd))
 		mon_thread.start()
 	# start cosbench in controller #

@@ -11,7 +11,7 @@ import os
 class Analysis :
 
 	def __init__(self, conf):
-		self.data_path = conf['data_path']
+		#self.data_path = conf['data_path']
 		self.node_list = conf['node_list']
 		self.osd_device = conf['osd_device']
 		self.io_openfile_list = []
@@ -19,13 +19,19 @@ class Analysis :
 		self.__prepare_data__()
 
 
-	def __prepare_data__(self):
+	def __prepare_data__(self):	
 		#os.system('cd /root/pench/data')
 		for node in self.node_list:
 			path = '/root/data/'+node
 			os.system('mkdir '+path)
-			os.system('scp root@'+node+':/root/iostat.out '+path)
-			#os.system('scp root@'+node+':/root/vmstat.out '+path)
+
+			t = paramiko.Transport(sock=(node, 22))
+			t.connect(username="root", password="admin123")
+			sftp = paramiko.SFTPClient.from_transport(t)
+			sftp.get("/root/iostat.out", path)
+			#sftp.get("/root/vmstat.out", path)
+			t.close()
+
 			iofile = open(path+'iostat.out')
 			self.io_openfile_list.append(iofile)
 			#vmfile = open(path+'vmstat.out')
@@ -58,6 +64,7 @@ class Analysis :
 					w_wait.append(float(value_list[11]))
 			iostat_res['read_wait'] = round(sum(r_wait)/len(r_wait), 2)
 			iostat_res['wirte_wait'] = round(sum(w_wait)/len(w_wait), 2)
+			self.__clean__()
 			return iostat_res
 
 			
