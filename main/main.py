@@ -10,6 +10,7 @@ import os
 
 import analysis.analysis as analysis
 
+conf_path = "/pench/pench.conf"
 
 def init(conf):
 	try:
@@ -22,9 +23,9 @@ def init(conf):
 
 
 def get_conf(path=None):
+	conf = {}
 	if path is None:
 		print "Configuration: "
-		conf = {}
 		conf['node_list'] = ['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34']
 		conf['last'] = 150
 		conf['interval'] = 1
@@ -32,10 +33,24 @@ def get_conf(path=None):
 		conf['workload_path'] = "/root/0.4.2.c4/conf/s3-config-sample.xml"
 		conf['osd_device'] = "sda"
 		#conf = {'node_list':['172.16.171.36','172.16.171.37','172.16.171.38','172.16.171.34'], 'last':10, 'interval':1,}
-		return conf
 	else :
 		# load the config file
-		pass
+		conf_file = open(path)
+		for line in conf_file.readlines():
+			value_list = re.split('=', line)
+			if value_list[0] == "node_list":
+				conf['node_list'] = value_list[2]
+			if value_list[0] == "last":
+				conf['last'] = value_list[2]
+			if value_list[0] == "interval":
+				conf['interval'] = value_list[2]
+			if value_list[0] == "cosbench_path":
+				conf['cosbench_path'] = value_list[2]
+			if value_list[0] == "workload_path":
+				conf['workload_path'] = value_list[2]
+			if value_list[0] == "osd_device":
+				conf['osd_device'] = value_list[2]
+	return conf
 
 
 def log(content):
