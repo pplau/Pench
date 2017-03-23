@@ -46,6 +46,7 @@ class Analysis :
 
 
 	def iostat_analysis(self):
+		iostat_res = {}
 		iostat_res['read_num_count'] = 0
 		iostat_res['write_num_count'] = 0
 		iostat_res['read_kb_count'] = 0

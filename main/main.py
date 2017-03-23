@@ -39,7 +39,8 @@ def get_conf(path=None):
 		for line in conf_file.readlines():
 			value_list = re.split('=', line)
 			if value_list[0] == "node_list":
-				conf['node_list'] = value_list[2]
+				n_list = value_list[2]
+				conf['node_list'] = re.split(',', n_list)
 			if value_list[0] == "last":
 				conf['last'] = value_list[2]
 			if value_list[0] == "interval":
