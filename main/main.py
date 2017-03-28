@@ -105,7 +105,8 @@ def run_pench(conf):
 		
 	# start iostat in each server node #
 	for conn in connect_list:
-		cmd = 'iostat -k -x -t '+str(conf['interval'])+' '+str(conf['last'])+' > /root/iostat.out'
+		cmd = 'iostat -k -x -t '+str(conf['interval'])+' '+str(conf['last'])+' > /root/iostat.out && '
+		cmd = cmd + 'vmstat '+str(conf['interval'])+' '+str(conf['last'])+' > /root/vmstat.out'
 		mon_thread = threading.Thread(target=ssh_exec_cmd,args=(conn, cmd))
 		mon_thread.start()
 	# start cosbench in controller #
@@ -132,8 +133,10 @@ if __name__=='__main__':
 		if tag is '1':
 			print "jump to analyse "
 			anyls = analysis.Analysis(conf)
-			res = anyls.iostat_analysis()
-			print res
+			io_res = anyls.iostat_analysis()
+			vm_res = anyls.vmstat_analysis()
+			print io_res
+			print vm_res
 			exit()
 
 		else :

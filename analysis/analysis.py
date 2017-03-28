@@ -29,14 +29,14 @@ class Analysis :
 			t = paramiko.Transport(sock=(node, 22))
 			t.connect(username="root", password="admin123")
 			sftp = paramiko.SFTPClient.from_transport(t)
-			sftp.get("/root/iostat.out", path+node+".out")
-			#sftp.get("/root/vmstat.out", path)
+			sftp.get("/root/iostat.out", path+node+"-io.out")
+			sftp.get("/root/vmstat.out", path+node+"-vm.out")
 			t.close()
 
-			iofile = open(path+node+".out")
+			iofile = open(path+node+"-io.out")
 			self.io_openfile_list.append(iofile)
-			#vmfile = open(path+'vmstat.out')
-			#self.io_openfile_list.append(vmfile)
+			vmfile = open(path+node+'-vm.out')
+			self.vm_openfile_list.append(vmfile)
 
 
 	def __clean__(self):
@@ -81,18 +81,39 @@ class Analysis :
 		iostat_res['write_kb_count'] = round(iostat_res['write_kb_count']/len(self.node_list), 2)
 		return iostat_res
 
-			
-
-	def mem_util(self):
-		pass
+		
 
 
-	def mem_ip(self):
-		pass
+	def vmstat_analysis(self):
+		vmstat_res = {}
+		vmstat_res['i_kb'] = 0
+		vmstat_res['o_kb'] = 0
+		vmstat_res['i_block_num'] = 0
+		vmstat_res['o_block_num'] = 0
+		for f in self.vm_openfile_list:
+			i_kb = 0
+			o_kb = 0
+			i_block_num = 0
+			o_block_num = 0
+			for line in f.readlines():
+				value_list = re.split(r'\s+', line)
+				if value_list[0] != 'procs' && value_list[0] != 'r':
+					i_kb = i_kb+int(value_list[6])
+					o_kb = o_kb+int(value_list[7])
+					i_block_num = i_block_num+int(value_list[8])
+					o_block_num = o_block_num+int(value_list[9])
+			vmstat_res['i_kb'] = vmstat_res['i_kb']+i_kb
+			vmstat_res['o_kb'] = vmstat_res['o_kb']+o_kb
+			vmstat_res['i_block_num'] = vmstat_res['i_block_num']+i_block_num
+			vmstat_res['o_block_num'] = vmstat_res['o_block_num']+o_block_num
+
+		vmstat_res['i_kb'] = round(vmstat_res['i_kb']/len(self.node_list), 2)
+		vmstat_res['o_kb'] = round(vmstat_res['o_kb']/len(self.node_list), 2)
+		vmstat_res['i_block_num'] = round(vmstat_res['i_block_num']/len(self.node_list), 2)
+		vmstat_res['o_block_num'] = round(vmstat_res['o_block_num']/len(self.node_list), 2)
+		return vmstat_res
 
 
-	def mem_op(self):
-		pass
 
 
 
