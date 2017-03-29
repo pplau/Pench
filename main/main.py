@@ -40,7 +40,7 @@ def get_conf(path=None):
 			value_list = re.split('=', line)
 			if value_list[0] == "node_list":
 				n_list = value_list[2]
-				conf['node_list'] = re.split(',', n_list)
+				conf['node_list'] = re.split(';', n_list)
 			if value_list[0] == "last":
 				conf['last'] = value_list[2]
 			if value_list[0] == "interval":
@@ -120,9 +120,9 @@ if __name__=='__main__':
 
 	conf = get_conf()
 	init(conf)
-	print "iostat running..."
+	print "iostat & vmstat running..."
 	run_pench(conf)
-	#time.sleep(conf['last']+1)
+	time.sleep(conf['last']+1)
 
 	print "Please input 1 to jump to analyse."
 	print "Please input 2 to stop."
