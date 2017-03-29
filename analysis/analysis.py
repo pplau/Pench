@@ -97,11 +97,13 @@ class Analysis :
 			o_block_num = 0
 			for line in f.readlines():
 				value_list = re.split(r'\s+', line)
-				if value_list[0] != 'procs' && value_list[0] != 'r':
+				n = 1
+				if n>2:
 					i_kb = i_kb+int(value_list[6])
 					o_kb = o_kb+int(value_list[7])
 					i_block_num = i_block_num+int(value_list[8])
 					o_block_num = o_block_num+int(value_list[9])
+				n = n+1
 			vmstat_res['i_kb'] = vmstat_res['i_kb']+i_kb
 			vmstat_res['o_kb'] = vmstat_res['o_kb']+o_kb
 			vmstat_res['i_block_num'] = vmstat_res['i_block_num']+i_block_num
