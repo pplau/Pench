@@ -122,7 +122,7 @@ if __name__=='__main__':
 	init(conf)
 	print "iostat & vmstat running..."
 	run_pench(conf)
-	time.sleep(conf['last']+1)
+	#time.sleep(conf['last']+1)
 
 	print "Please input 1 to jump to analyse."
 	print "Please input 2 to stop."
